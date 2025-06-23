@@ -1,0 +1,42 @@
+
+# dependencies
+node_modules/
+android/
+ios/
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+.idea/
+.vscode/
+# Native
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+/assets/images/verde-blanco/
+/assets/images/verde-negro/
+# Metro
+.metro-health-check*
+
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# macOS
+.DS_Store
+*.pem
+
+# local env files
+.env*.local
+
+# typescript
+*.tsbuildinfo
+
+app-example
+eas.json
+google-services.json
