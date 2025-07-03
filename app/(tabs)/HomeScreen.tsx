@@ -1,46 +1,52 @@
-"use client"
+"use client";
 
-import { useState, useMemo } from "react"
+import { useState, useMemo } from "react";
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   Platform,
-  UIManager,
   RefreshControl,
   TouchableOpacity,
   Dimensions,
   ToastAndroid,
-} from "react-native"
-import { Thermometer } from "lucide-react-native"
-import { SafeAreaView } from "react-native-safe-area-context"
-import { AlertTriangle, Calendar, Droplets, MapPin, Wind } from "lucide-react-native"
-import { MOCK_FAVORITES, user } from "@/data"
-import { useRouter } from "expo-router"
-import { useColorScheme } from "@/hooks/useColorScheme"
+} from "react-native";
+import { Thermometer } from "lucide-react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  AlertTriangle,
+  Calendar,
+  Droplets,
+  MapPin,
+  Wind,
+} from "lucide-react-native";
+import { MOCK_FAVORITES, user } from "@/data";
+import { useRouter } from "expo-router";
+import { useColorScheme } from "@/hooks/useColorScheme";
+import {listarRegiones} from "@/api/querys";
 const generateHistoricalData = () => {
-  const today = new Date()
-  const data = []
+  const today = new Date();
+  const data = [];
 
   for (let i = 10; i >= 0; i--) {
-    const date = new Date(today)
-    date.setDate(today.getDate() - i)
+    const date = new Date(today);
+    date.setDate(today.getDate() - i);
 
     // Generate random AQI between 30 and 150
-    const aqi = Math.floor(Math.random() * 120) + 30
+    const aqi = Math.floor(Math.random() * 120) + 30;
 
     // Determine status and color based on AQI
-    let status, color
+    let status, color;
     if (aqi <= 50) {
-      status = "Bueno"
-      color = "#00C853"
+      status = "Bueno";
+      color = "#00C853";
     } else if (aqi <= 100) {
-      status = "Moderado"
-      color = "#FFBB00"
+      status = "Moderado";
+      color = "#FFBB00";
     } else {
-      status = "Insalubre"
-      color = "#FF5252"
+      status = "Insalubre";
+      color = "#FF5252";
     }
 
     data.push({
@@ -48,24 +54,26 @@ const generateHistoricalData = () => {
       aqi,
       status,
       color,
-    })
+    });
   }
 
-  return data
-}
+  return data;
+};
 
 export default function HomeScreen() {
-  const router = useRouter()
-  const colorScheme = useColorScheme()
-  const isDarkMode = colorScheme === "dark"
-  const [favorites, setFavorites] = useState(MOCK_FAVORITES)
-  const [refreshing, setRefreshing] = useState(false)
-  const [selectedDate, setSelectedDate] = useState(new Date())
-  const [historicalData, setHistoricalData] = useState(generateHistoricalData())
-  const [visibleWeek, setVisibleWeek] = useState(0) // 0 = current week, 1 = previous week
+  const router = useRouter();
+  const colorScheme = useColorScheme();
+  const isDarkMode = colorScheme === "dark";
+  const [favorites, setFavorites] = useState(MOCK_FAVORITES);
+  const [refreshing, setRefreshing] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [historicalData, setHistoricalData] = useState(
+    generateHistoricalData()
+  );
+  const [visibleWeek, setVisibleWeek] = useState(0); // 0 = current week, 1 = previous week
 
-  const screenWidth = Dimensions.get("window").width
-  const dayWidth = (screenWidth - 64) / 7 // 7 days per week, with margins
+  const screenWidth = Dimensions.get("window").width;
+  const dayWidth = (screenWidth - 64) / 7; // 7 days per week, with margins
 
   // Create dynamic styles based on color scheme
   const dynamicStyles = useMemo(() => {
@@ -100,17 +108,17 @@ export default function HomeScreen() {
       warningText: {
         color: isDarkMode ? "#fdba74" : "#9a3412",
       },
-    }
-  }, [isDarkMode])
+    };
+  }, [isDarkMode]);
 
   const onRefresh = () => {
-    setRefreshing(true)
+    setRefreshing(true);
     // Simulate API call
     setTimeout(() => {
-      setHistoricalData(generateHistoricalData())
-      setRefreshing(false)
-    }, 1000)
-  }
+      setHistoricalData(generateHistoricalData());
+      setRefreshing(false);
+    }, 1000);
+  };
 
   // Function to get a date string for display
   const getDateString = (date: Date) => {
@@ -119,28 +127,28 @@ export default function HomeScreen() {
       year: "numeric",
       month: "long",
       day: "numeric",
-    })
-  }
+    });
+  };
 
   // Function to get short day name
   const getDayName = (date: Date) => {
-    return date.toLocaleDateString("es-CL", { weekday: "short" })
-  }
+    return date.toLocaleDateString("es-CL", { weekday: "short" });
+  };
 
   // Function to get day number
   const getDayNumber = (date: Date) => {
-    return date.getDate()
-  }
+    return date.getDate();
+  };
 
   // Function to check if date is today
   const isToday = (date: Date) => {
-    const today = new Date()
+    const today = new Date();
     return (
       date.getDate() === today.getDate() &&
       date.getMonth() === today.getMonth() &&
       date.getFullYear() === today.getFullYear()
-    )
-  }
+    );
+  };
 
   // Function to check if two dates are the same
   const isSameDay = (date1: Date, date2: Date) => {
@@ -148,54 +156,65 @@ export default function HomeScreen() {
       date1.getDate() === date2.getDate() &&
       date1.getMonth() === date2.getMonth() &&
       date1.getFullYear() === date2.getFullYear()
-    )
-  }
+    );
+  };
 
   // Get visible data based on current week
   const getVisibleData = () => {
     if (visibleWeek === 0) {
       // Current week (last 7 days)
-      return historicalData.slice(-7)
+      return historicalData.slice(-7);
     } else {
       // Previous week (days 8-14 from the end)
-      return historicalData.slice(-14, -7)
+      return historicalData.slice(-14, -7);
     }
-  }
+  };
 
-  const visibleData = getVisibleData()
+  const visibleData = getVisibleData();
 
   const showToast = () => {
-    const message = visibleWeek === 0 ? "Mostrando datos de la semana anterior" : "Mostrando datos de la semana actual"
+    const message =
+      visibleWeek === 0
+        ? "Mostrando datos de la semana anterior"
+        : "Mostrando datos de la semana actual";
     if (Platform.OS === "android") {
       try {
-        ToastAndroid.show(message, ToastAndroid.SHORT)
+        ToastAndroid.show(message, ToastAndroid.SHORT);
       } catch (e) {
-        console.warn("ToastAndroid error", e)
+        console.warn("ToastAndroid error", e);
       }
     }
-  }
+  };
 
   // Function to toggle between weeks
   const toggleWeek = () => {
-    setVisibleWeek(visibleWeek === 0 ? 1 : 0)
-    showToast()
-  }
+    setVisibleWeek(visibleWeek === 0 ? 1 : 0);
+    showToast();
+  };
 
   // Get selected day data
   const getSelectedDayData = () => {
     return (
-      historicalData.find((item) => isSameDay(item.date, selectedDate)) || historicalData[historicalData.length - 1]
-    )
-  }
+      historicalData.find((item) => isSameDay(item.date, selectedDate)) ||
+      historicalData[historicalData.length - 1]
+    );
+  };
 
-  const selectedDayData = getSelectedDayData()
+  const selectedDayData = getSelectedDayData();
 
   return (
     <SafeAreaView style={[styles.container, dynamicStyles.container]}>
-      <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
         <View style={styles.header}>
           <Text style={styles.greeting}>Hola, {user.name || "Usuario"}</Text>
           <Text style={styles.subtitle}>Monitoreo de Calidad del Aire</Text>
+          <TouchableOpacity onPress={() => listarRegiones()}>
+            <Text>Ver Regiones</Text>
+          </TouchableOpacity>
         </View>
 
         {/* Calendar section */}
@@ -203,10 +222,17 @@ export default function HomeScreen() {
           <View style={styles.calendarHeader}>
             <Calendar size={20} color="#10b981" />
             <View style={styles.headerCalendar}>
-              <Text style={[styles.sectionTitle, dynamicStyles.textPrimary]}>{user.region.name}</Text>
+              <Text style={[styles.sectionTitle, dynamicStyles.textPrimary]}>
+                {user.region.name}
+              </Text>
             </View>
-            <TouchableOpacity style={[styles.weekToggleButton, dynamicStyles.weekToggleButton]} onPress={toggleWeek}>
-              <Text style={[styles.weekToggleText, dynamicStyles.weekToggleText]}>
+            <TouchableOpacity
+              style={[styles.weekToggleButton, dynamicStyles.weekToggleButton]}
+              onPress={toggleWeek}
+            >
+              <Text
+                style={[styles.weekToggleText, dynamicStyles.weekToggleText]}
+              >
                 {visibleWeek === 0 ? "Semana anterior" : "Semana actual"}
               </Text>
             </TouchableOpacity>
@@ -215,27 +241,34 @@ export default function HomeScreen() {
           {/* Calendar days */}
           <View style={styles.calendarDays}>
             {visibleData.map((day, index) => {
-              const isSelectedDay = isSameDay(day.date, selectedDate)
-              const isTodayDay = isToday(day.date)
+              const isSelectedDay = isSameDay(day.date, selectedDate);
+              const isTodayDay = isToday(day.date);
 
               return (
                 <TouchableOpacity
                   key={index}
-                  style={[styles.calendarDay, isSelectedDay && styles.selectedDay, { width: dayWidth }]}
+                  style={[
+                    styles.calendarDay,
+                    isSelectedDay && styles.selectedDay,
+                    { width: dayWidth },
+                  ]}
                   onPress={() => setSelectedDate(day.date)}
                 >
                   <Text
                     style={[
                       styles.dayName,
-                      isDarkMode && !isSelectedDay && !isTodayDay && dynamicStyles.textSecondary,
+                      isDarkMode &&
+                        !isSelectedDay &&
+                        !isTodayDay &&
+                        dynamicStyles.textSecondary,
                       // If selected, always use white text
                       isSelectedDay
                         ? styles.selectedDayText
                         : // If today but not selected, use green text
-                          isTodayDay
-                          ? dynamicStyles.todayText
-                          : // Otherwise use default text color based on theme
-                            null,
+                        isTodayDay
+                        ? dynamicStyles.todayText
+                        : // Otherwise use default text color based on theme
+                          null,
                     ]}
                   >
                     {getDayName(day.date)}
@@ -243,44 +276,65 @@ export default function HomeScreen() {
                   <Text
                     style={[
                       styles.dayNumber,
-                      isDarkMode && !isSelectedDay && !isTodayDay && dynamicStyles.textPrimary,
+                      isDarkMode &&
+                        !isSelectedDay &&
+                        !isTodayDay &&
+                        dynamicStyles.textPrimary,
                       // If selected, always use white text
                       isSelectedDay
                         ? styles.selectedDayText
                         : // If today but not selected, use green text
-                          isTodayDay
-                          ? dynamicStyles.todayText
-                          : // Otherwise use default text color based on theme
-                            null,
+                        isTodayDay
+                        ? dynamicStyles.todayText
+                        : // Otherwise use default text color based on theme
+                          null,
                     ]}
                   >
                     {getDayNumber(day.date)}
                   </Text>
-                  <View style={[styles.dayAqiIndicator, { backgroundColor: day.color }]}>
+                  <View
+                    style={[
+                      styles.dayAqiIndicator,
+                      { backgroundColor: day.color },
+                    ]}
+                  >
                     <Text style={styles.dayAqiText}>{day.aqi}</Text>
                   </View>
                 </TouchableOpacity>
-              )
+              );
             })}
           </View>
 
           {/* Selected day details */}
-          <View style={[styles.selectedDayDetails, dynamicStyles.cardBackgroundAlt]}>
-            <Text style={[styles.selectedDayDate, dynamicStyles.textPrimary]}>{getDateString(selectedDate)}</Text>
+          <View
+            style={[styles.selectedDayDetails, dynamicStyles.cardBackgroundAlt]}
+          >
+            <Text style={[styles.selectedDayDate, dynamicStyles.textPrimary]}>
+              {getDateString(selectedDate)}
+            </Text>
 
             <View style={styles.aqiDetailsContainer}>
-              <View style={[styles.aqiBadgeLarge, { backgroundColor: selectedDayData.color }]}>
+              <View
+                style={[
+                  styles.aqiBadgeLarge,
+                  { backgroundColor: selectedDayData.color },
+                ]}
+              >
                 <Text style={styles.aqiTextLarge}>{selectedDayData.aqi}</Text>
               </View>
 
               <View style={styles.aqiInfo}>
-                <Text style={[styles.aqiStatus, dynamicStyles.textPrimary]}>Estado: {selectedDayData.status}</Text>
-                <Text style={[styles.aqiDescription, dynamicStyles.textSecondary]}>
+                <Text style={[styles.aqiStatus, dynamicStyles.textPrimary]}>
+                  Estado: {selectedDayData.status}
+                </Text>
+                <Text
+                  style={[styles.aqiDescription, dynamicStyles.textSecondary]}
+                >
                   {selectedDayData.aqi <= 50
                     ? "La calidad del aire es satisfactoria y la contaminación del aire presenta poco o ningún riesgo."
                     : selectedDayData.aqi <= 100
-                      ? "La calidad del aire es aceptable, sin embargo, puede haber riesgo para algunas personas sensibles."
-                      : "La calidad del aire es insalubre. Todos pueden comenzar a experimentar efectos en la salud."}
+                    ? "La calidad del aire es aceptable, sin embargo, puede haber riesgo para algunas personas sensibles."
+                    : "La calidad del aire es insalubre. Todos pueden comenzar a experimentar efectos en la salud."}
                 </Text>
               </View>
             </View>
@@ -289,8 +343,17 @@ export default function HomeScreen() {
               <View style={styles.dailyMetric}>
                 <Droplets size={20} color="#0ea5e9" />
                 <View>
-                  <Text style={[styles.dailyMetricLabel, dynamicStyles.textSecondary]}>Humedad</Text>
-                  <Text style={[styles.dailyMetricValue, dynamicStyles.textPrimary]}>
+                  <Text
+                    style={[
+                      styles.dailyMetricLabel,
+                      dynamicStyles.textSecondary,
+                    ]}
+                  >
+                    Humedad
+                  </Text>
+                  <Text
+                    style={[styles.dailyMetricValue, dynamicStyles.textPrimary]}
+                  >
                     {Math.floor(Math.random() * 30) + 50}%
                   </Text>
                 </View>
@@ -299,8 +362,17 @@ export default function HomeScreen() {
               <View style={styles.dailyMetric}>
                 <Wind size={20} color="#6366f1" />
                 <View>
-                  <Text style={[styles.dailyMetricLabel, dynamicStyles.textSecondary]}>Viento</Text>
-                  <Text style={[styles.dailyMetricValue, dynamicStyles.textPrimary]}>
+                  <Text
+                    style={[
+                      styles.dailyMetricLabel,
+                      dynamicStyles.textSecondary,
+                    ]}
+                  >
+                    Viento
+                  </Text>
+                  <Text
+                    style={[styles.dailyMetricValue, dynamicStyles.textPrimary]}
+                  >
                     {Math.floor(Math.random() * 15) + 5} km/h
                   </Text>
                 </View>
@@ -309,8 +381,17 @@ export default function HomeScreen() {
               <View style={styles.dailyMetric}>
                 <Thermometer size={20} color="#ef4444" />
                 <View>
-                  <Text style={[styles.dailyMetricLabel, dynamicStyles.textSecondary]}>Temperatura</Text>
-                  <Text style={[styles.dailyMetricValue, dynamicStyles.textPrimary]}>
+                  <Text
+                    style={[
+                      styles.dailyMetricLabel,
+                      dynamicStyles.textSecondary,
+                    ]}
+                  >
+                    Temperatura
+                  </Text>
+                  <Text
+                    style={[styles.dailyMetricValue, dynamicStyles.textPrimary]}
+                  >
                     {Math.floor(Math.random() * 10) + 15}°C
                   </Text>
                 </View>
@@ -323,38 +404,69 @@ export default function HomeScreen() {
         <View style={[styles.section, dynamicStyles.cardBackground]}>
           <View style={styles.sectionHeader}>
             <MapPin size={20} color="#10b981" />
-            <Text style={[styles.sectionTitle, dynamicStyles.textPrimary]}>Zonas Favoritas</Text>
+            <Text style={[styles.sectionTitle, dynamicStyles.textPrimary]}>
+              Zonas Favoritas
+            </Text>
           </View>
 
           {favorites.map((location) => (
-            <View key={location.id} style={[styles.locationCard, dynamicStyles.cardBackgroundAlt]}>
+            <View
+              key={location.id}
+              style={[styles.locationCard, dynamicStyles.cardBackgroundAlt]}
+            >
               <View style={styles.locationHeader}>
-                <Text style={[styles.locationName, dynamicStyles.textPrimary]}>{location.name}</Text>
-                <View style={[styles.aqiBadge, { backgroundColor: location.color }]}>
+                <Text style={[styles.locationName, dynamicStyles.textPrimary]}>
+                  {location.name}
+                </Text>
+                <View
+                  style={[styles.aqiBadge, { backgroundColor: location.color }]}
+                >
                   <Text style={styles.aqiText}>{location.aqi}</Text>
                 </View>
               </View>
 
-              <Text style={[styles.statusText, dynamicStyles.textPrimary]}>Estado: {location.status}</Text>
+              <Text style={[styles.statusText, dynamicStyles.textPrimary]}>
+                Estado: {location.status}
+              </Text>
 
               <View style={styles.metricsContainer}>
                 <View style={styles.metric}>
                   <Droplets size={16} color="#0ea5e9" />
-                  <Text style={[styles.metricText, dynamicStyles.textSecondary]}>Humedad: 65%</Text>
+                  <Text
+                    style={[styles.metricText, dynamicStyles.textSecondary]}
+                  >
+                    Humedad: 65%
+                  </Text>
                 </View>
                 <View style={styles.metric}>
                   <Wind size={16} color="#6366f1" />
-                  <Text style={[styles.metricText, dynamicStyles.textSecondary]}>Viento: 12 km/h</Text>
+                  <Text
+                    style={[styles.metricText, dynamicStyles.textSecondary]}
+                  >
+                    Viento: 12 km/h
+                  </Text>
                 </View>
                 <View style={styles.metric}>
                   <Thermometer size={16} color="#ef4444" />
-                  <Text style={[styles.metricText, dynamicStyles.textSecondary]}>Temp: 22°C</Text>
+                  <Text
+                    style={[styles.metricText, dynamicStyles.textSecondary]}
+                  >
+                    Temp: 22°C
+                  </Text>
                 </View>
               </View>
 
               {location.aqi > 100 && (
-                <View style={[styles.warningContainer, dynamicStyles.warningContainer]}>
-                  <AlertTriangle size={16} color={isDarkMode ? "#fdba74" : "#f59e0b"} />
+                <View
+                  style={[
+                    styles.warningContainer,
+                    dynamicStyles.warningContainer,
+                  ]}
+                >
+                  <AlertTriangle
+                    size={16}
+                    color={isDarkMode ? "#fdba74" : "#f59e0b"}
+                  />
                   <Text style={[styles.warningText, dynamicStyles.warningText]}>
                     Se recomienda evitar actividades al aire libre
                   </Text>
@@ -365,7 +477,7 @@ export default function HomeScreen() {
         </View>
       </ScrollView>
     </SafeAreaView>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -613,5 +725,4 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 8,
   },
-})
-
+});

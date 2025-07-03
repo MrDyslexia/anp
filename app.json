@@ -13,12 +13,12 @@
       "bundleIdentifier": "com.lowframes.anp"
     },
     "android": {
-      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.lowframes.anp"
+      "package": "com.lowframes.anp",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "bundler": "metro",

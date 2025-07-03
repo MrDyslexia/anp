@@ -40,3 +40,4 @@ yarn-error.*
 app-example
 eas.json
 google-services.json
+bun.lock

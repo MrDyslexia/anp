@@ -1,14 +1,22 @@
-"use client"
+"use client";
 
-import { useState, useRef } from "react"
-import { StyleSheet, View, Text, Image, TouchableOpacity, Dimensions, FlatList } from "react-native"
-import { router } from "expo-router"
-import { SafeAreaView } from "react-native-safe-area-context"
-import { Button, PaperProvider } from "react-native-paper"
-import { useColorScheme } from "@/hooks/useColorScheme"
-import { Home, Map, Bell, User, ChevronRight, X } from "lucide-react-native"
+import { useState, useRef } from "react";
+import {
+  StyleSheet,
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  Dimensions,
+  FlatList,
+} from "react-native";
+import { router } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Button, PaperProvider } from "react-native-paper";
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { Home, Map, Bell, User, ChevronRight, X } from "lucide-react-native";
 
-const { width } = Dimensions.get("window")
+const { width } = Dimensions.get("window");
 
 // Instruction screens data
 const instructionScreens = [
@@ -25,7 +33,8 @@ const instructionScreens = [
   {
     id: "2",
     title: "Mapa de Contaminación",
-    description: "Explora las regiones interactivas para ver los niveles de contaminación a lo largo del país.",
+    description:
+      "Explora las regiones interactivas para ver los niveles de contaminación a lo largo del país.",
     icon: (color: string) => <Map size={80} color={color} />,
     feature: "Regiones",
     details:
@@ -34,7 +43,8 @@ const instructionScreens = [
   {
     id: "3",
     title: "Notificaciones",
-    description: "Mantente informado con alertas y actualizaciones sobre la calidad del aire.",
+    description:
+      "Mantente informado con alertas y actualizaciones sobre la calidad del aire.",
     icon: (color: string) => <Bell size={80} color={color} />,
     feature: "Centro de Notificaciones",
     details:
@@ -43,45 +53,51 @@ const instructionScreens = [
   {
     id: "4",
     title: "Perfil y Preferencias",
-    description: "Personaliza tu experiencia y gestiona tus preferencias de usuario.",
+    description:
+      "Personaliza tu experiencia y gestiona tus preferencias de usuario.",
     icon: (color: string) => <User size={80} color={color} />,
     feature: "Perfil",
     details:
       "Configura tus ubicaciones favoritas, permisos de ubicación y accede a soporte técnico cuando lo necesites.",
   },
-]
+];
 
 export default function OnboardingScreen() {
-  const colorScheme = useColorScheme()
-  const isDarkMode = colorScheme === "dark"
-  const [currentIndex, setCurrentIndex] = useState(0)
-
-  const styles = getStyles(isDarkMode)
+  const colorScheme = useColorScheme();
+  const isDarkMode = colorScheme === "dark";
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const styles = getStyles(isDarkMode);
 
   const goToNextScreen = () => {
     if (currentIndex < instructionScreens.length - 1) {
-      const nextIndex = currentIndex + 1
-      setCurrentIndex(nextIndex)
+      const nextIndex = currentIndex + 1;
+      setCurrentIndex(nextIndex);
       if (flatListRef.current) {
         flatListRef.current.scrollToIndex({
           index: nextIndex,
           animated: true,
-        })
+        });
       }
     } else {
-      goToHomeScreen()
+      goToHomeScreen();
     }
-  }
+  };
 
   const goToHomeScreen = () => {
-    router.replace("/login")
-    //router.replace("/HomeScreen");
-  }
+    //router.replace("/login")
+    router.replace("/HomeScreen");
+  };
 
-  const flatListRef = useRef<FlatList<(typeof instructionScreens)[0]>>(null)
+  const flatListRef = useRef<FlatList<(typeof instructionScreens)[0]>>(null);
 
-  const renderItem = ({ item, index }: { item: (typeof instructionScreens)[0]; index: number }) => {
-    const accentColor = "#10b981"
+  const renderItem = ({
+    item,
+    index,
+  }: {
+    item: (typeof instructionScreens)[0];
+    index: number;
+  }) => {
+    const accentColor = "#10b981";
 
     return (
       <View style={styles.slide}>
@@ -95,8 +111,8 @@ export default function OnboardingScreen() {
           <Text style={styles.featureDescription}>{item.details}</Text>
         </View>
       </View>
-    )
-  }
+    );
+  };
 
   const Pagination = () => {
     return (
@@ -104,18 +120,19 @@ export default function OnboardingScreen() {
         {instructionScreens.map((_, index) => (
           <View
             key={index}
-            style={[styles.paginationDot, index === currentIndex ? styles.paginationDotActive : null]}
+            style={[
+              styles.paginationDot,
+              index === currentIndex ? styles.paginationDotActive : null,
+            ]}
           />
         ))}
       </View>
-    )
-  }
+    );
+  };
 
   return (
     <PaperProvider>
       <SafeAreaView style={styles.container}>
-
-
         <FlatList
           ref={flatListRef}
           data={instructionScreens}
@@ -125,8 +142,8 @@ export default function OnboardingScreen() {
           showsHorizontalScrollIndicator={false}
           keyExtractor={(item) => item.id}
           onMomentumScrollEnd={(event) => {
-            const index = Math.round(event.nativeEvent.contentOffset.x / width)
-            setCurrentIndex(index)
+            const index = Math.round(event.nativeEvent.contentOffset.x / width);
+            setCurrentIndex(index);
           }}
           getItemLayout={(data, index) => ({
             length: width,
@@ -145,9 +162,15 @@ export default function OnboardingScreen() {
               style={styles.nextButton}
               contentStyle={styles.buttonContent}
             >
-              {currentIndex === instructionScreens.length - 1 ? "Comenzar" : "Siguiente"}
+              {currentIndex === instructionScreens.length - 1
+                ? "Comenzar"
+                : "Siguiente"}
               {currentIndex < instructionScreens.length - 1 && (
-                <ChevronRight size={20} color="white" style={styles.buttonIcon} />
+                <ChevronRight
+                  size={20}
+                  color="white"
+                  style={styles.buttonIcon}
+                />
               )}
             </Button>
 
@@ -165,7 +188,7 @@ export default function OnboardingScreen() {
         </View>
       </SafeAreaView>
     </PaperProvider>
-  )
+  );
 }
 
 const getStyles = (isDarkMode: boolean) =>
@@ -192,7 +215,9 @@ const getStyles = (isDarkMode: boolean) =>
       top: 16,
       padding: 8,
       borderRadius: 20,
-      backgroundColor: isDarkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)",
+      backgroundColor: isDarkMode
+        ? "rgba(255,255,255,0.1)"
+        : "rgba(0,0,0,0.05)",
     },
     slide: {
       width: Dimensions.get("window").width,
@@ -204,7 +229,9 @@ const getStyles = (isDarkMode: boolean) =>
       marginBottom: 32,
       padding: 24,
       borderRadius: 100,
-      backgroundColor: isDarkMode ? "rgba(16, 185, 129, 0.1)" : "rgba(16, 185, 129, 0.1)",
+      backgroundColor: isDarkMode
+        ? "rgba(16, 185, 129, 0.1)"
+        : "rgba(16, 185, 129, 0.1)",
     },
     title: {
       fontSize: 28,
@@ -277,5 +304,4 @@ const getStyles = (isDarkMode: boolean) =>
     skipTextButton: {
       marginTop: 12,
     },
-  })
-
+  });
